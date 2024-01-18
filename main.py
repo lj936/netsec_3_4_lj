@@ -43,7 +43,7 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
     x_train, y_train, feature_order = preprocess(train_df, mfe1, mfe2, mfe3, y_lab_enc)
 
     #Random Forest fitten
-    clf = RandomForestClassifier(n_estimators=100)
+    clf = RandomForestClassifier(n_estimators=1) #TODO 100
     print("Start")
     start_time = time.time()
     clf.fit(x_train, y_train)
