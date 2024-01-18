@@ -13,14 +13,18 @@ def calculate_mean(value, other_feature_value):
                     total += int(element, 16)
 
                 return total / other_feature_value
+        #empty list
         else:
             return -1
+    #nan
     else:
         return -1
 
 def calculate_network_address(ip_addresses):
+    #nan
     if not ip_addresses or isinstance(ip_addresses, float) and math.isnan(ip_addresses):
         return -1
+    
     ip_objects = []
     for ip in ip_addresses:
         try:
@@ -28,6 +32,8 @@ def calculate_network_address(ip_addresses):
             ip_objects.append(ip_obj)
         except ipaddress.AddressValueError:
             pass
+    
+    #empty list
     if not ip_objects:
         return -1
 
