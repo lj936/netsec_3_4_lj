@@ -53,51 +53,55 @@ def calculate_network_address(ip_addresses):
     return network_address_decimal
 
 def preprocess(df, mfe1, mfe2, mfe3, y_lab_enc, feature_order = []):
-    #Irrelevante Features entfernen
-    df = df.drop(columns=['id', 'dns_query_name_len', 'dns_answer_ttl', 'dns_query_class', 'dns_answer_cnt', 'dns_query_type', "dns_query_cnt", 'http_uri', 'da', 'sa'])
-
-    ###NonObjects
-    df = pd.get_dummies(df, columns=["tls_svr_cs_cnt", "tls_svr_key_exchange_len"])
-    for feature, datentyp in df.dtypes.items():
-        if datentyp != 'object':
-            if df[feature].isna().any():
-                df[feature] = df[feature].fillna(-1)
-
-    ###Objects
-    #TLS-Features
-    df['tls_len_mean'] = df.apply(lambda row: transform_value(row['tls_len'], row['tls_cnt']), axis=1)
-    df['tls_svr_len_mean'] = df.apply(lambda row: transform_value(row['tls_svr_len'], row['tls_svr_cnt']), axis=1)
-    df['tls_cs_mean'] = df.apply(lambda row: transform_value(row['tls_cs'], row['tls_cs_cnt']), axis=1)
-    df['tls_svr_cs_mean'] = df.apply(lambda row: transform_value(row['tls_svr_cs'], row['tls_svr_cs_cnt_1.0']), axis=1)
-    df['tls_ext_types_mean'] = df.apply(lambda row: transform_value(row['tls_ext_types'], row['tls_ext_cnt']), axis=1)
-    df['tls_svr_ext_types_mean'] = df.apply(lambda row: transform_value(row['tls_svr_ext_types'], row['tls_svr_ext_cnt']), axis=1)
-    df = df.drop(columns=['tls_len', 'tls_svr_len', 'tls_cs', 'tls_svr_cs', 'tls_ext_types', 'tls_svr_ext_types'])
-
-    #DNS- und HTTP-Features
-    df['dns_query_name'] = df['dns_query_name'].apply(mfe1.enc)
-    df['http_content_type'] = df['http_content_type'].apply(mfe2.enc)
-    df['http_host'] = df['http_host'].apply(mfe3.enc)
-    df['dns_answer_common_network_ip'] = df['dns_answer_ip'].apply(calculate_network_address)
-    df = df.drop(columns=['dns_answer_ip'])
-
-    #METADATA-Features
-    for column in df.columns:
-        if isinstance(df[column][0], list):
-            if isinstance(df[column][0][0], int):
-                df = split_lists(df, column)
-    
     #Labels Encodieren
     df['label'] = y_lab_enc.transform(df['label'])
 
     #x_train und y_train trennen
     y = df['label']
-    x = df.drop(columns=['label'])
+    xdf = df.drop(columns=['label'])
 
+    #x_train und ids trennen
+    ids = xdf['id']
+    xdf = xdf.drop(columns=['id'])
+    
+    #Irrelevante Features entfernen
+    xdf = xdf.drop(columns=['dns_query_name_len', 'dns_answer_ttl', 'dns_query_class', 'dns_answer_cnt', 'dns_query_type', "dns_query_cnt", 'http_uri', 'da', 'sa'])
+
+    ###NonObjects
+    xdf = pd.get_dummies(xdf, columns=["tls_svr_cs_cnt", "tls_svr_key_exchange_len"])
+    for feature, datentyp in xdf.dtypes.items():
+        if datentyp != 'object':
+            if xdf[feature].isna().any():
+                xdf[feature] = xdf[feature].fillna(-1)
+
+    ###Objects
+    #TLS-Features
+    xdf['tls_len_mean'] = xdf.apply(lambda row: transform_value(row['tls_len'], row['tls_cnt']), axis=1)
+    xdf['tls_svr_len_mean'] = xdf.apply(lambda row: transform_value(row['tls_svr_len'], row['tls_svr_cnt']), axis=1)
+    xdf['tls_cs_mean'] = xdf.apply(lambda row: transform_value(row['tls_cs'], row['tls_cs_cnt']), axis=1)
+    xdf['tls_svr_cs_mean'] = xdf.apply(lambda row: transform_value(row['tls_svr_cs'], row['tls_svr_cs_cnt_1.0']), axis=1)
+    xdf['tls_ext_types_mean'] = xdf.apply(lambda row: transform_value(row['tls_ext_types'], row['tls_ext_cnt']), axis=1)
+    xdf['tls_svr_ext_types_mean'] = xdf.apply(lambda row: transform_value(row['tls_svr_ext_types'], row['tls_svr_ext_cnt']), axis=1)
+    xdf = xdf.drop(columns=['tls_len', 'tls_svr_len', 'tls_cs', 'tls_svr_cs', 'tls_ext_types', 'tls_svr_ext_types'])
+
+    #DNS- und HTTP-Features
+    xdf['dns_query_name'] = xdf['dns_query_name'].apply(mfe1.enc)
+    xdf['http_content_type'] = xdf['http_content_type'].apply(mfe2.enc)
+    xdf['http_host'] = xdf['http_host'].apply(mfe3.enc)
+    xdf['dns_answer_common_network_ip'] = xdf['dns_answer_ip'].apply(calculate_network_address)
+    xdf = xdf.drop(columns=['dns_answer_ip'])
+
+    #METADATA-Features
+    for column in xdf.columns:
+        if isinstance(xdf[column][0], list):
+            if isinstance(xdf[column][0][0], int):
+                xdf = split_lists(xdf, column)
+    
     #x_train und x_test auf gleiche Feature-Reihenfolge bringen
     if len(feature_order) > 0:
-        x = x.reindex(columns=feature_order)
+        xdf = xdf.reindex(columns=feature_order)
 
     #Reihenfolge der Features
-    df_columns = x.columns
+    xdf_columns = xdf.columns
 
-    return x, y, df_columns
+    return xdf, y, ids, xdf_columns

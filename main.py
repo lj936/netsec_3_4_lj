@@ -40,10 +40,10 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
     mfe3 = My_Feature_Encoder(train_df, 'http_host')
 
     #Trainingsdataframe preprocessen
-    x_train, y_train, feature_order = preprocess(train_df, mfe1, mfe2, mfe3, y_lab_enc)
+    x_train, y_train, _, feature_order = preprocess(train_df, mfe1, mfe2, mfe3, y_lab_enc)
 
     #Random Forest fitten
-    clf = RandomForestClassifier(n_estimators=1) #TODO 100
+    clf = RandomForestClassifier(n_estimators=1)
     print("Start")
     start_time = time.time()
     clf.fit(x_train, y_train)
@@ -52,10 +52,26 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
     print(f"{elapsed_time}s gedauert")
 
     #Testdataframe preprocessen
-    x_test, y_test, _ = preprocess(test_df, mfe1, mfe2, mfe3, y_lab_enc, feature_order)
+    x_test, y_test, ids_test, _ = preprocess(test_df, mfe1, mfe2, mfe3, y_lab_enc, feature_order)
 
     ##########################################################################
     predictionarr = clf.predict(x_test)
+
+    prediction = y_lab_enc.inverse_transform(predictionarr)
+
+    df = pd.DataFrame({'id': ids_test, 'prediction': prediction})
+
+    # Erstellen Sie ein leeres Dictionary, um die Ergebnisse zu speichern
+    result_dict = {}
+
+    # Iterieren Sie über das DataFrame und fügen Sie die Werte dem Dictionary hinzu
+    for index, row in df.iterrows():
+        result_dict[str(row['id'])] = str(row['prediction'])
+
+    # Erstellen Sie die JSON-Datei
+    json_filename = level + '.json'
+    with open(json_filename, 'w') as json_file:
+        json.dump(result_dict, json_file, indent=4)
 
     def precision(xt, yt):
         a = 0
