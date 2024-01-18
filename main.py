@@ -59,14 +59,12 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
     #Preprocessing the Trainingsdataframe
     x_train, y_train, _, feature_order = preprocess(train_df, dqn_mfe, hct_mfe, hh_mfe, y_lab_enc)
 
-    #x_train.head(10000).to_excel(level + '.xlsx', index=False, header=True)
-
     #Preprocessing the Testdataframe
     x_test, y_test, ids_test, _ = preprocess(test_df, dqn_mfe, hct_mfe, hh_mfe, y_lab_enc, feature_order)
 
     #Random Forest Fitting
     print("Random Forest Fitting")
-    rfclf = RandomForestClassifier(n_estimators=1) #TODO 100
+    rfclf = RandomForestClassifier(n_estimators=100)
     rfclf.fit(x_train, y_train)
 
     #Making predictions based on x_test
