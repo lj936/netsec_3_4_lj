@@ -1,1 +1,1 @@
-skur
+Siehe requirements.txt: Fehlende Bibliotheken installieren und Json Dateien herunterladen, entpacken und umbenennen.
