@@ -17,4 +17,4 @@ rem git add .
 git commit -m "%commit_msg%"
 git push origin main
 
-pause
+rem pause
