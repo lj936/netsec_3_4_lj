@@ -3,7 +3,6 @@ import pandas as pd
 from my_feature_encoder import My_Feature_Encoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
-import time
 from preprocess import preprocess
 
 def extract_string(lst):
@@ -44,35 +43,30 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
 
     #Random Forest fitten
     clf = RandomForestClassifier(n_estimators=1)
-    print("Start")
-    start_time = time.time()
+    #print("Start")
+    #start_time = time.time()
     clf.fit(x_train, y_train)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"{elapsed_time}s gedauert")
+    #end_time = time.time()
+    #elapsed_time = end_time - start_time
+    #print(f"{elapsed_time}s gedauert")
 
     #Testdataframe preprocessen
     x_test, y_test, ids_test, _ = preprocess(test_df, mfe1, mfe2, mfe3, y_lab_enc, feature_order)
 
-    ##########################################################################
+    #
     predictionarr = clf.predict(x_test)
-
+    
+    #
     prediction = y_lab_enc.inverse_transform(predictionarr)
-
     df = pd.DataFrame({'id': ids_test, 'prediction': prediction})
-
-    # Erstellen Sie ein leeres Dictionary, um die Ergebnisse zu speichern
     result_dict = {}
-
-    # Iterieren Sie über das DataFrame und fügen Sie die Werte dem Dictionary hinzu
     for index, row in df.iterrows():
         result_dict[str(row['id'])] = str(row['prediction'])
-
-    # Erstellen Sie die JSON-Datei
-    json_filename = level + '.json'
+    json_filename = 'results_' + level + '.json'
     with open(json_filename, 'w') as json_file:
         json.dump(result_dict, json_file, indent=4)
 
+    #
     def precision(xt, yt):
         a = 0
         b = len(yt)
@@ -80,5 +74,4 @@ for level in ['toplevel_1', 'midlevel_2', 'finegrained_3']:
             if yt[i] == xt[i]:
                 a += 1
         return a/b
-
-    print("Precision: " + str(precision(predictionarr, y_test)))
+    print(f"Precision for {level}: {str(precision(predictionarr, y_test))}")

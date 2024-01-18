@@ -1,0 +1,21 @@
+Standardbibliotheken (vorinstalliert):
+-json
+-ipaddress
+-math
+
+Weitere Bibliotheken:
+-pandas: pip install pandas
+-scikit-learn: pip install scikit-learn
+
+Benötigte Json Dateien herunterladen, entpacken und umbenennen (Dateien bitte alle im gleichen Ordner abspeichern, in dem auch main.py abgespeichert ist):
+https://github.com/ACANETS/NetML-Competition2020/raw/master/data/non-vpn2016/2_training_set/2_training_set.json.gz --> Json entpacken und umbenennen: x_train.json
+
+https://github.com/ACANETS/NetML-Competition2020/raw/master/data/non-vpn2016/2_training_annotations/2_training_anno_fine.json.gz --> Json entpacken und umbenennen: y_train_finegrained_3.json
+https://github.com/ACANETS/NetML-Competition2020/raw/master/data/non-vpn2016/2_training_annotations/2_training_anno_mid.json.gz --> Json entpacken und umbenennen: y_train_midlevel_2.json
+https://github.com/ACANETS/NetML-Competition2020/raw/master/data/non-vpn2016/2_training_annotations/2_training_anno_top.json.gz --> Json entpacken und umbenennen: y_train_toplevel_1.json
+
+https://github.com/ACANETS/NetML-Competition2020/raw/master/data/non-vpn2016/0_test-challenge_set/0_test-challenge_set.json.gz --> Json entpacken und umbenennen: x_test.json
+
+https://github.com/ACANETS/NetML-Competition2020/raw/master/results/non-vpn2016_fine/submission_test-challenge.json --> Json umbenennen: y_test_finegrained_3.json
+https://github.com/ACANETS/NetML-Competition2020/raw/master/results/non-vpn2016_mid/submission_test-challenge.json --> Json umbenennen: y_test_midlevel_2.json
+https://github.com/ACANETS/NetML-Competition2020/raw/master/results/non-vpn2016_top/submission_test-challenge.json --> Json umbenennen: y_test_toplevel_1.json
